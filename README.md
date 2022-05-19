@@ -130,3 +130,34 @@ Check on rules
 
 * https://youtu.be/EEhmR5bQUG4
 
+Still has weird behavior
+
+* https://stackoverflow.com/questions/66818700/acess-scripts-in-external-snakemake-directory-without-defining-absolute-path/70708168#70708168
+
+Okay, turns out if you replace one item in `params`, it sets all the other params to blank. Inputs have to be files.
+
+```
+from doctest import debug_script
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+
+module lapis_workflow:
+    snakefile:
+        github("j23414/test_snakemake_6", path="workflow/lapis.smk", branch="main")
+
+
+use rule lapis from lapis_workflow as pull_data with:
+    output:
+        output="lapis.fasta",
+    params:
+        query="country=Switzerland&division=Geneva&pangoLineage=AY.1",
+        api="fasta",
+```
+
+Then run it with:
+
+```
+snakemake --snakefile Snakefile -c 2 pull_data
+```
