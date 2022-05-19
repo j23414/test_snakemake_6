@@ -114,6 +114,19 @@ TypeError in line 9 of https://github.com/nextstrain/ncov/raw/master/workflow/sn
 
 Track down `TypeError`
 
+## simplier
 
+```
+snakemake --snakefile Snakefile_local zika_export -c2
+Building DAG of jobs...
+MissingInputException in line 44 of https://github.com/nextstrain/zika/raw/main/Snakefile:
+Missing input files for rule zika_filter:
+    output: results/filtered.fasta
+    affected files:
+        config/dropped_strains.txt
+```
 
+Check on rules
+
+* https://youtu.be/EEhmR5bQUG4
 
