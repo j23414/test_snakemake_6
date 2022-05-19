@@ -1,0 +1,19 @@
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+
+module remote_workflow:
+    snakefile:
+        github("j23414/test_snakemake_6", path="workflow/Snakefile", branch="main")
+
+
+use rule * from remote_workflow as augur_*
+
+
+# reuse a rule
+use rule test from remote_workflow as with_test with:
+    input:
+        "b.txt",
+    output:
+        "c.txt",

@@ -1,0 +1,10 @@
+rule test:
+    input:
+        input="a.txt",
+    output:
+        output="a_out.txt",
+    params:
+        p1=100,
+    threads: 1
+    shell:
+        "echo {threads} > {output}; cat {input} >> {output}"
