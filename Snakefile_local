@@ -17,3 +17,18 @@ use rule test from remote_workflow as with_test with:
         "b.txt",
     output:
         "c.txt",
+
+
+module ncov_workflow:
+    snakefile:
+        github("nextstrain/ncov", path="workflow/snakemake_rules/main_workflow.smk", branch="master")    
+    config:
+        github("nextstrain/ncov", path="defaults/parameters.yaml", branch="master")
+
+use rule * from ncov_workflow as ncov_*
+
+use rule index_sequences from ncov_workflow as index_sequences with:
+    input:
+        sequences="test.fasta",
+    output:
+        sequence_index="test_index.tsv.xz"

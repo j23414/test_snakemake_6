@@ -1,27 +1,16 @@
 # test_snakemake_6
 
-## Wrappers
-
-* [Wrapper repository](https://github.com/snakemake/snakemake-wrappers/tree/0.2.0)
-
-```
-bio/
- |_ bcftools
- |_ bwa/mem
- |_ delly
- |_ sambamba/sort
- |_ samtools
-```
-
 ## Modules
 
 > With Snakemake 6.0 and later, it is possible to define external workflows as modules, from which rules can be used by explicitly “importing” them.
 
 ```
-github("j23414/test_snakemake_6", path="workflow/Snakefile") #, tag="v1.0.0")
+# Requires a branch or tag
+github("j23414/test_snakemake_6", path="workflow/Snakefile", branch="main") #, tag="v1.0.0")
 ```
 
 ```
+# auto fix any tab errors
 mamba install snakefmt
 snakefmt Snakefile
 ```
@@ -31,7 +20,8 @@ touch a.txt
 snakemake --snakefile Snakefile_local augur_test -c2
 ```
 
-which gives:
+<details><summary>View output</summary>
+
 
 ```
 Building DAG of jobs...
@@ -58,12 +48,15 @@ Finished job 0.
 1 of 1 steps (100%) done
 Complete log: .snakemake/log/2022-05-19T104632.920696.snakemake.log
 ```
+</details>
 
 Reuse a rule
 
 ```
 snakemake --snakefile Snakefile_local with_test -c2
 ```
+
+<details><summary>View output</summary>
 
 ```
 Building DAG of jobs...
@@ -90,6 +83,36 @@ Finished job 0.
 1 of 1 steps (100%) done
 Complete log: .snakemake/log/2022-05-19T104836.402734.snakemake.log
 ```
+
+</details>
+
+## Pull a rule from ncov
+
+```
+module ncov_workflow:
+    snakefile:
+        github("nextstrain/ncov", path="workflow/snakemake_rules/main_workflow.smk", branch="master")    
+    config:
+        github("nextstrain/ncov", path="defaults/parameters.yaml", branch="master")
+
+use rule * from ncov_workflow as ncov_*
+
+use rule index_sequences from ncov_workflow as index_sequences with:
+    input:
+        sequences="test.fasta",
+    output:
+        sequence_index="test_index.tsv.xz"
+```
+
+```
+ snakemake --snakefile Snakefile_local index_sequences -c2
+TypeError in line 9 of https://github.com/nextstrain/ncov/raw/master/workflow/snakemake_rules/main_workflow.smk:
+'GithubFile' object is not subscriptable
+  File "/Users/jenchang/github/j23414/test_snakemake_6/Snakefile_local", line 28, in <module>
+  File "https://github.com/nextstrain/ncov/raw/master/workflow/snakemake_rules/main_workflow.smk", line 9, in <module>
+```
+
+Track down `TypeError`
 
 
 
