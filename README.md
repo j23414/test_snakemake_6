@@ -1,4 +1,144 @@
-# test_snakemake_6
+# test\_snakemake\_6
+
+## Importable modules
+
+<details><summary>vipr.smk</summary>
+
+Create a local Snakefile with:
+
+```
+from doctest import debug_script
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+module vipr_workflow:
+    snakefile:
+        github("j23414/test_snakemake_6", path="workflow/vipr.smk", branch="main")
+
+
+use rule vipr_fasta from vipr_workflow as pull_data with:
+    output:
+        output="vipr_download.fasta",
+    params:
+        family='pneumoviridae',
+        virus='Respiratory%20syncytial%20virus',
+```
+
+Then run with 
+
+```
+snakemake --snakefile Snakefile -c 2 pull_data
+```
+
+Will give stdout output:
+
+```
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count    min threads    max threads
+---------  -------  -------------  -------------
+pull_data        1              1              1
+total            1              1              1
+
+Select jobs to execute...
+
+[Thu May 19 16:29:34 2022]
+rule pull_data:
+    output: vipr_download.fasta
+    jobid: 0
+    resources: tmpdir=/var/folders/wt/gw5b79wn4sjcpny6d0x4p1680000gn/T
+
+https://www.viprbrc.org/brc/api/sequence?datatype=genome&family=pneumoviridae&Respiratory%20syncytial%20virus&minlen=5000&&metadata=genbank,strainname,segment,date,host,country,genotype,species&output=fasta
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 86.2M    0 86.2M    0     0   785k      0 --:--:--  0:01:52 --:--:-- 7891k
+[Thu May 19 16:31:26 2022]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: .snakemake/log/2022-05-19T162933.367339.snakemake.log
+```
+
+And you can view the fasta file
+
+```
+grep -c ">" vipr_download.fasta 
+#> 46102
+```
+
+</details>
+
+<details><summary>lapis.smk</summary>
+
+Create a local Snakefile with:
+
+```
+from doctest import debug_script
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+
+module lapis_workflow:
+    snakefile:
+        github("j23414/test_snakemake_6", path="workflow/lapis.smk", branch="main")
+
+
+use rule lapis from lapis_workflow as pull_data with:
+    output:
+        output="lapis.fasta",
+    params:
+        query="country=Switzerland&division=Geneva&pangoLineage=AY.1",
+        api="fasta",
+```
+
+Then run it with:
+
+```
+snakemake --snakefile Snakefile -c 2 pull_data
+```
+
+Will give stdout output:
+
+```
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count    min threads    max threads
+---------  -------  -------------  -------------
+pull_data        1              1              1
+total            1              1              1
+
+Select jobs to execute...
+
+[Thu May 19 16:36:05 2022]
+rule pull_data:
+    output: lapis.fasta
+    jobid: 0
+    resources: tmpdir=/var/folders/wt/gw5b79wn4sjcpny6d0x4p1680000gn/T
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 1138k    0 1138k    0     0   801k      0 --:--:--  0:00:01 --:--:--  801k
+[Thu May 19 16:36:06 2022]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: .snakemake/log/2022-05-19T163604.553006.snakemake.log
+```
+
+```
+grep -c ">" lapis.fasta 
+#> 39
+```
+
+</details>
+
+
 
 ## Modules
 
@@ -136,55 +276,6 @@ Still has weird behavior
 
 Okay, turns out if you replace one item in `params`, it sets all the other params to blank. Inputs have to be files.
 
-```
-from doctest import debug_script
-from snakemake.utils import min_version
-
-min_version("6.0")
 
 
-module lapis_workflow:
-    snakefile:
-        github("j23414/test_snakemake_6", path="workflow/lapis.smk", branch="main")
 
-
-use rule lapis from lapis_workflow as pull_data with:
-    output:
-        output="lapis.fasta",
-    params:
-        query="country=Switzerland&division=Geneva&pangoLineage=AY.1",
-        api="fasta",
-```
-
-Then run it with:
-
-```
-snakemake --snakefile Snakefile -c 2 pull_data
-```
-
-### Importable Vipr
-
-```
-from doctest import debug_script
-from snakemake.utils import min_version
-
-min_version("6.0")
-
-module vipr_workflow:
-    snakefile:
-        github("j23414/test_snakemake_6", path="workflow/vipr.smk", branch="main")
-
-
-use rule vipr_fasta from vipr_workflow as pull_data with:
-    output:
-        output="vipr_download.fasta",
-    params:
-        family='pneumoviridae',
-        virus='Respiratory%20syncytial%20virus',
-```
-
-Then run with 
-
-```
-snakemake --snakefile Snakefile -c 2 pull_data
-```
