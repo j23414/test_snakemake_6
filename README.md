@@ -276,6 +276,8 @@ Still has weird behavior
 
 Okay, turns out if you replace one item in `params`, it sets all the other params to blank. Inputs have to be files.
 
+* https://snakedeploy.readthedocs.io/en/latest/getting_started/tools.html#deploying-workflows (thanks John!)
+
 
 
 
