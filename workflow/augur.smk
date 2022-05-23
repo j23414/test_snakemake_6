@@ -1,3 +1,8 @@
+
+
+def build_filter_params(group_by="country year", sequences_per_group="1000", min_date="1951", min_length=5000 ):
+    return(" --group-by " . group_by . " --sequences-per-group " . sequences_per_group . " --min-date " . min_date . " --min-length " . min_length)
+
 rule filter:
     input:
         sequences_fasta="sequences.fasta",
