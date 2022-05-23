@@ -6,7 +6,7 @@ rule run_align:
     output:
         alignment_fasta="aligned.fasta",
     params:
-        run_align_params=" --max-indel 100 --seed-spacing 100 --jobs 1 ",
+        run_align_params=" --max-indel 10000 --seed-spacing 1000 --jobs 1 ",
     shell:
         """
         nextalign run -v \
