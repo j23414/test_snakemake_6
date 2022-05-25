@@ -85,3 +85,94 @@ use rule run_align from nextalign_reuse as align_mkpx with:
         alignment_fasta="data/aligned.fasta",
     params:
         run_align_params=" --jobs 1 --max-indel 10000 --nuc-seed-spacing 1000 ",
+
+
+use rule mask from augur_reuse as mask_mkpx with:
+    input:
+        sequences_fasta="data/aligned.fasta",
+        mask_txt="data/config/mask.bed",
+    output:
+        masked_fasta="data/masked.fasta",
+    params:
+        mask_params=" --mask-from-beginning 1500 --mask-from-end 1000 ",
+
+
+use rule tree from augur_reuse as tree_mkpx with:
+    input:
+        alignment_fasta="data/masked.fasta",
+    output:
+        tree="data/mkpx_raw.tre",
+
+
+use rule refine from augur_reuse as refine_mkpx with:
+    input:
+        tree="data/mkpx_raw.tre",
+        alignment_fasta="data/masked.fasta",
+        metadata_tsv="data/metadata.tsv",
+    output:
+        refined_tree="data/mkpx.tre",
+        node_data_json="data/branch_lengths.json",
+    params:
+        refine_params=" --timetree --root min_dev --clock-rate 5e-6 --clock-std-dev 3e-6 --coalescent opt --date-inference marginal --clock-filter-iqd 10",
+
+
+use rule ancestral from augur_reuse as ancestral_mkpx with:
+    input:
+        tree="data/mkpx.tre",
+        alignment_fasta="data/masked.fasta",
+    output:
+        node_data_json="data/nt_muts.json",
+    params:
+        ancestral_params=" --inference joint ",
+
+
+use rule translate from augur_reuse as translate_mkpx with:
+    input:
+        tree="data/mkpx.tre",
+        nt_node_data_json="data/nt_muts.json",
+        reference_gb="data/config/reference.gb",
+    output:
+        node_data_json="data/aa_muts.json",
+
+
+use rule traits from augur_reuse as traits_mkpx with:
+    input:
+        tree="data/mkpx.tre",
+        metadata_tsv="data/metadata.tsv",
+    output:
+        node_data_json="data/traits.json",
+    params:
+        traits_params=" --columns country --confidence --sampling-bias-correction 3 ",
+
+
+# Rethink export
+
+
+rule export:
+    input:
+        tree="data/mkpx.tre",
+        metadata="data/metadata.tsv",
+        branch_lengths="data/branch_lengths.json",
+        traits="data/traits.json",
+        nt_muts="data/nt_muts.json",
+        aa_muts="data/aa_muts.json",
+        colors="data/config/colors.tsv",
+        lat_longs="data/config/lat_longs.tsv",
+        description="data/config/description.md",
+        auspice_config="data/config/auspice_config.json",
+    output:
+        auspice_json="auspice/mkpx/mkpx.json",
+        root_sequence="auspice/mkpx/mkpx_root-sequence.json",
+    shell:
+        """
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.branch_lengths} {input.traits} {input.nt_muts} {input.aa_muts} \
+            --colors {input.colors} \
+            --lat-longs {input.lat_longs} \
+            --description {input.description} \
+            --auspice-config {input.auspice_config} \
+            --include-root-sequence \
+            --output {output.auspice_json}
+        """

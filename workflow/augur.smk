@@ -31,7 +31,9 @@ rule mask:
         augur mask \
           --sequences {input.sequences_fasta} \
           --mask {input.mask_txt} \
+          --output {output.masked_fasta} \
           {params.mask_params}
+        ls -ltr {output.masked_fasta}
         """
 
 
@@ -44,7 +46,7 @@ rule tree:
         """
         augur tree \
           --alignment {input.alignment_fasta} \
-          --output {input.tree}
+          --output {output.tree}
         """
 
 
@@ -85,6 +87,24 @@ rule ancestral:
           --alignment {input.alignment_fasta} \
           --output-node-data {output.node_data_json} \
           {params.ancestral_params}
+        """
+
+
+rule translate:
+    input:
+        tree="data.tre",
+        nt_node_data_json="nt_muts.json",
+        reference_gb="reference.gb",
+    output:
+        node_data_json="aa_muts.json",
+    shell:
+        """
+        augur translate \
+            --tree {input.tree} \
+            --ancestral-sequence {input.nt_node_data_json} \
+            --reference-sequence {input.reference_gb} \
+            --output {output.node_data_json}
+        ls -ltr {output.node_data_json}
         """
 
 

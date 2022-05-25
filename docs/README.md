@@ -7,3 +7,16 @@
 Describe reusuable components here. Document this for current develoeprs. 
 
 
+**Terminology**
+
+Clarification based on: https://www.virology.ws/2021/02/25/understanding-virus-isolates-variants-strains-and-more/
+
+| Term | Our definition |
+|:--|:--|
+| Isolate | Sample collected from a single host |
+| Variant | Different from reference strain (~10nuc) but definition is now fuzzy. Can also mean a spill over version. |
+| Strain  | variant with unique and stable phenotypic characteristics (HI titers, etc).|
+| Genotype | grouping based on sequence similarity |
+| Serotype | grouping based on antigenic similarity (usu. cross protection) |
+| Clade | grouping based on a common ancester |
+
