@@ -1,8 +1,11 @@
+# USAGE: snakemake --snakefile mkpx.smk export -c4
+
 from doctest import debug_script
 from snakemake.utils import min_version
 
 min_version("6.0")
 
+# 1) Importing directly resulted in some config linking errors
 # Doubt this works out of the box
 # RUN: include: github("nextstrain/monkeypox", path="Snakefile", branch="master")
 # OUTPUT: (cannot find core.smk, so not pulling rest of files)
@@ -12,7 +15,7 @@ min_version("6.0")
 # >   File "https://github.com/nextstrain/monkeypox/raw/master/Snakefile", line 24, in <module>
 # >   File "https://github.com/nextstrain/monkeypox/raw/master/workflow/snakemake_rules/core.smk", line 27, in <module>
 
-
+# 2) Ergo: went with a mix of importable rules
 # ==== Importable rules from modules =================
 module nxstn_mkpx:
     snakefile:
@@ -146,8 +149,7 @@ use rule traits from augur_reuse as traits_mkpx with:
 
 
 # Rethink export
-
-
+# Look for a generalized export (arrays? globs?)
 rule export:
     input:
         tree="data/mkpx.tre",
@@ -161,8 +163,10 @@ rule export:
         description="data/config/description.md",
         auspice_config="data/config/auspice_config.json",
     output:
-        auspice_json="auspice/mkpx/mkpx.json",
-        root_sequence="auspice/mkpx/mkpx_root-sequence.json",
+        auspice_json="auspice/mkpx.json",
+        root_sequence="auspice/mkpx_root-sequence.json",
+    params:
+        export_params=" --include-root-sequence ",
     shell:
         """
         augur export v2 \
@@ -173,6 +177,6 @@ rule export:
             --lat-longs {input.lat_longs} \
             --description {input.description} \
             --auspice-config {input.auspice_config} \
-            --include-root-sequence \
-            --output {output.auspice_json}
+            --output {output.auspice_json} \
+            {params.export_params}
         """
