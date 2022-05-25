@@ -15,6 +15,7 @@ min_version("6.0")
 # >   File "https://github.com/nextstrain/monkeypox/raw/master/Snakefile", line 24, in <module>
 # >   File "https://github.com/nextstrain/monkeypox/raw/master/workflow/snakemake_rules/core.smk", line 27, in <module>
 
+
 # 2) Ergo: went with a mix of importable rules
 # ==== Importable rules from modules =================
 module nxstn_mkpx:

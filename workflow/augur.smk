@@ -1,3 +1,4 @@
+# filter_params="--group-by country year --sequences-per-group 1000 --min-date 1950 --min-length 5000"
 rule augur_filter:
     input:
         sequences_fasta="sequences.fasta",
@@ -6,7 +7,7 @@ rule augur_filter:
     output:
         filtered_fasta="filtered.fasta",
     params:
-        filter_params=" --group-by country year --sequences-per-group 1000 --min-date 1950 --min-length 5000 ",
+        filter_params=" ",
     shell:
         """
         augur filter \
@@ -18,6 +19,7 @@ rule augur_filter:
         """
 
 
+# mask_params=" --mask-from-begining 1500 --mask-from-end 1000 "
 rule mask:
     input:
         sequences_fasta="sequences.fasta",
@@ -25,7 +27,7 @@ rule mask:
     output:
         masked_fasta="masked.fasta",
     params:
-        mask_params=" --mask-from-begining 1500 --mask-from-end 1000 ",
+        mask_params=" ",
     shell:
         """
         augur mask \
@@ -42,14 +44,18 @@ rule tree:
         alignment_fasta="aligned.fasta",
     output:
         tree="data.tre",
+    params:
+        tree_params=" ",
     shell:
         """
         augur tree \
           --alignment {input.alignment_fasta} \
-          --output {output.tree}
+          --output {output.tree} \
+          {params.tree_params}
         """
 
 
+# refine_params="--root min_dev  --timetree  --clock-rate 5e-6 --clock-std-dev 3e-6 --coalescent opt --date-inference marginal --clock-filter-iqd 10"
 rule refine:
     input:
         tree="data.tre",
@@ -59,7 +65,7 @@ rule refine:
         refined_tree="refined.tre",
         node_data_json="node_data.json",  # branch_lengths.json
     params:
-        refine_params="--root min_dev  --timetree  --clock-rate 5e-6 --clock-std-dev 3e-6 --coalescent opt --date-inference marginal --clock-filter-iqd 10",
+        refine_params="--root min_dev  --timetree --coalescent opt --date-inference marginal --clock-filter-iqd 10",
     shell:
         """
         augur refine \
@@ -72,6 +78,7 @@ rule refine:
         """
 
 
+# ancestral_params="--inference joint"
 rule ancestral:
     input:
         tree="data.tre",
@@ -104,10 +111,11 @@ rule translate:
             --ancestral-sequence {input.nt_node_data_json} \
             --reference-sequence {input.reference_gb} \
             --output {output.node_data_json}
-        ls -ltr {output.node_data_json}
+        ls {output.node_data_json}
         """
 
 
+# traits_params = " --columns country --sampling-bias-correction 3 --confidence "
 rule traits:
     input:
         tree="data.tre",
@@ -115,7 +123,7 @@ rule traits:
     output:
         node_data_json="node_data.json",  # traits.json
     params:
-        traits_params=" --columns country --sampling-bias-correction 3 --confidence ",
+        traits_params=" --confidence ",
     shell:
         """
         augur traits \
