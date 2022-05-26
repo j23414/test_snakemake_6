@@ -23,7 +23,7 @@ module nxstn_mkpx:
         github(
             "nextstrain/monkeypox",
             path="workflow/snakemake_rules/download_via_lapis.smk",
-            branch="lapis2",
+            branch="master",
         )
 
 
