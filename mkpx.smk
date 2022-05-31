@@ -67,7 +67,23 @@ rule mkpx_configs:
 use rule download_via_lapis from nxstn_mkpx as imported_lapis_mkpx with:
     output:
         sequences="data/sequences.fasta",
+        metadata="data/metadata_raw.tsv",
+
+
+# Otherwise filter fails, something weird in default LAPIS metadata output
+rule reshape_metadata:
+    input:
+        metadata_raw="data/metadata_raw.tsv",
+    output:
         metadata="data/metadata.tsv",
+    run:
+        import pandas as pd
+
+        df = pd.read_csv(input.metadata_raw, sep="\t")
+        new = df[
+            ["strain", "sraAccession", "date", "region", "country", "host", "clade"]
+        ].rename(columns={"sraAccession": "accession"})
+        new.to_csv(output.metadata, sep="\t", index=False)
 
 
 use rule augur_filter from augur_reuse as filter_mkpx with:
