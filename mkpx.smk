@@ -40,9 +40,9 @@ module nextalign_reuse:
 # ==== Main Workflow, start connectedd imported and bespoke rules
 rule mkpx_configs:
     output:
-        sequences="data/config/sequences.fasta",
-        outbreak="data/config/outbreak.fasta",
-        metadata="data/config/metadata.tsv",
+        # sequences="data/config/sequences.fasta",   # Not being used
+        # outbreak="data/config/outbreak.fasta",
+        metadata="data/metadata.tsv",
         auspice="data/config/auspice_config.json",
         colors="data/config/colors.tsv",
         description="data/config/description.md",
@@ -61,29 +61,36 @@ rule mkpx_configs:
         cd ..
         mv data/monkeypox-master/config/* data/config/.
         mv data/monkeypox-master/example_data/* data/config/.
+        cp data/config/metadata.tsv data/.
         """
 
 
-use rule download_via_lapis from nxstn_mkpx as imported_lapis_mkpx with:
+# use rule download_via_lapis from nxstn_mkpx as imported_lapis_mkpx with:
+#     output:
+#         sequences="data/sequences.fasta",
+#         metadata="data/metadata_raw.tsv",
+
+
+use rule download_sequences_via_lapis from nxstn_mkpx as imported_lapis_mkpx with:
     output:
         sequences="data/sequences.fasta",
-        metadata="data/metadata_raw.tsv",
 
 
-# Otherwise filter fails, something weird in default LAPIS metadata output
-rule reshape_metadata:
-    input:
-        metadata_raw="data/metadata_raw.tsv",
-    output:
-        metadata="data/metadata.tsv",
-    run:
-        import pandas as pd
-
-        df = pd.read_csv(input.metadata_raw, sep="\t")
-        new = df[
-            ["strain", "sraAccession", "date", "region", "country", "host", "clade"]
-        ].rename(columns={"sraAccession": "accession"})
-        new.to_csv(output.metadata, sep="\t", index=False)
+## Otherwise filter fails, something weird in default LAPIS metadata output
+## Subset to used columns, rename sraAccession to accession
+# rule reshape_metadata:
+#    input:
+#        metadata_raw="data/metadata_raw.tsv",
+#    output:
+#        metadata="data/metadata.tsv",
+#    run:
+#        import pandas as pd
+#
+#        df = pd.read_csv(input.metadata_raw, sep="\t")
+#        new = df[
+#            ["strain", "sraAccession", "date", "region", "country", "host", "clade"]
+#        ].rename(columns={"sraAccession": "accession"})
+#        new.to_csv(output.metadata, sep="\t", index=False)
 
 
 use rule augur_filter from augur_reuse as filter_mkpx with:
