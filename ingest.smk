@@ -55,3 +55,8 @@ use rule batchFetchGB from ncbi as fetch_gb with:
         genbank_ids="data/new.ids",
     output:
         genbank_gb="data/new.gb",
+
+
+use rule datasets_summary from ncbi as summary with:
+    output:
+        stdout="data/test_out.txt",

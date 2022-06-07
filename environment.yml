@@ -1,0 +1,21 @@
+# modified from https://github.com/corneliusroemer/ncov-simplest/blob/main/conda_env.yaml
+name: nextstrain_nf
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - augur
+  - nextstrain-cli
+  - auspice
+  - nextalign
+  - snakemake
+  - git
+  - pip
+  - xz
+  - ncbi-datasets-cli
+  - pip:
+    - awscli
+    - epiweeks
+    - smot
+    - parsec

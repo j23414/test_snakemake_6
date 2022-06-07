@@ -204,3 +204,24 @@ rule subset_new_ids:
           > _new.ids
         comm -13 _old.ids _new.ids > {output.new_ids}
         """
+
+
+# ==== NCBI Datasets command
+# https://www.ncbi.nlm.nih.gov/datasets/docs/v1/download-and-install/
+
+# Zika virus = 64320,
+# Human orthopneumovirus (HRSV) = 11250,
+# Measles = 351680,
+# Dengue = 12637,
+
+
+rule datasets_summary:
+    output:
+        out_file="data/stdout.txt",
+    params:
+        taxon="Zika virus",
+    shell:
+        """
+        #! /usr/bin/env bash
+        datasets summary genome taxon "{params.taxon}" &> {output.out_file}
+        """
