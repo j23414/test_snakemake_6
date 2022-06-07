@@ -27,7 +27,31 @@ module ingest_transform:
         )
 
 
+module ncbi:
+    snakefile:
+        github(
+            "j23414/test_snakemake_6",
+            path="workflow/ncbi.smk",
+            branch="main",
+        )
+
+
 # 2) Connect inputs and outputs
-use rule fetch_from_genbank from ingest_fetch as fetch_gb with:
+# use rule fetch_from_genbank from ingest_fetch as fetch_gb with:
+#     output:
+#         genbank_ndjson="data/genbank.ndjson",
+
+
+use rule subset_new_ids from ncbi as new_ids with:
+    input:
+        genbank_ids="data/rsv.ids",
+        genbank_gb="data/rsv.gb",
     output:
-        genbank_ndjson="data/genbank.ndjson",
+        new_ids="data/new.ids",
+
+
+use rule batchFetchGB from ncbi as fetch_gb with:
+    input:
+        genbank_ids="data/new.ids",
+    output:
+        genbank_gb="data/new.gb",
