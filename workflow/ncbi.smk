@@ -1,75 +1,4 @@
-# rule genbank_url:
-#     output:
-#         url_txt="data/url_txt",
-#     run:
-#         """
-#         #!/usr/bin/env python3
-#
-#         # Generate URL to download all Monkeypox sequences and their curated metadata
-#         # from GenBank via NCBI Virus.
-#         #
-#         # The URL this program builds is based on the URL for SARS-CoV-2 constructed with
-#         #
-#         #     https://github.com/nextstrain/ncov-ingest/blob/2a5f255329ee5bdf0cabc8b8827a700c92becbe4/bin/genbank-url
-#         #
-#         # and observing the network activity at
-#         #
-#         #     https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide&VirusLineage_ss=Monkeypox%20virus,%20taxid:10244
-#
-#         from urllib.parse import urlencode
-#
-#         endpoint = "https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/"
-#         params = {
-#             # Search criteria
-#             'fq': [
-#                 '{!tag=SeqType_s}SeqType_s:("Nucleotide")', # Nucleotide sequences (as opposed to protein)
-#                 'VirusLineageId_ss:(10244)',                # NCBI Taxon id for Monkeypox
-#             ],
-#
-#             # Unclear, but seems necessary.
-#             'q': '*:*',
-#
-#             # Response format
-#             'cmd': 'download',
-#             'dlfmt': 'csv',
-#             'fl': ','.join(
-#                 ':'.join(names) for names in [
-#                     # Pairs of (output column name, source data field).
-#                     ('genbank_accession',       'id'),
-#                     ('genbank_accession_rev',   'AccVer_s'),
-#                     ('database',                'SourceDB_s'),
-#                     ('strain',                  'Isolate_s'),
-#                     ('region',                  'Region_s'),
-#                     ('location',                'CountryFull_s'),
-#                     ('collected',               'CollectionDate_s'),
-#                     ('submitted',               'CreateDate_dt'),
-#                     ('length',                  'SLen_i'),
-#                     ('host',                    'Host_s'),
-#                     ('isolation_source',        'Isolation_csv'),
-#                     ('bioproject_accession',    'BioProject_s'),
-#                     ('biosample_accession',     'BioSample_s'),
-#                     ('sra_accession',           'SRALink_csv'),
-#                     ('title',                   'Definition_s'),
-#                     ('authors',                 'Authors_csv'),
-#                     ('publications',            'PubMed_csv'),
-#                     ('sequence',                'Nucleotide_seq'),
-#                 ]
-#             ),
-#
-#             # Stable sort with newest last so diffs work nicely.  Columns are source
-#             # data fields, not our output columns.
-#             'sort': 'SourceDB_s desc, CollectionDate_s asc, id asc',
-#
-#             # This isn't Entrez, but include the same email parameter it requires just
-#             # to be nice.
-#             'email': 'hello@nextstrain.org',
-#         }
-#         query = urlencode(params, doseq = True, encoding = "utf-8")
-#
-#         print(f"{endpoint}?{query}")
-#         """
-#
-#
+
 # rule fetch_from_genbank:
 #     input:
 #         genbank_url=rules.genbank_url.output.url_txt,
@@ -80,9 +9,8 @@
 #         email="hello@nextstrain.org",
 #     shell:
 #         """
-#         # ./bin/fetch-from-genbank > {output.genbank_ndjson}
-#         genbank_url=`cat {input.genbank_url}`
-#         curl "${{genbank_url}}" \
+#         # Well this is kinda horrifying
+#         curl "https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?fq=%7B%21tag%3DSeqType_s%7DSeqType_s%3A%28%22Nucleotide%22%29&fq=VirusLineageId_ss%3A%282697049%29&q=%2A%3A%2A&cmd=download&dlfmt=csv&fl=genbank_accession%3Aid%2Cgenbank_accession_rev%3AAccVer_s%2Cdatabase%3ASourceDB_s%2Csra_accession%3ASRALink_ss%2Cstrain%3AIsolate_s%2Cregion%3ARegion_s%2Clocation%3ACountryFull_s%2Ccollected%3ACollectionDate_s%2Csubmitted%3ACreateDate_dt%2Cpango_lineage%3ALineage_s%2Clength%3ASLen_i%2Chost%3AHost_s%2Cisolation_source%3AIsolation_csv%2Cbiosample_accession%3ABioSample_s%2Ctitle%3ADefinition_s%2Cauthors%3AAuthors_csv%2Cpublications%3APubMed_csv%2Csequence%3ANucleotide_seq&sort=SourceDB_s+desc%2C+CollectionDate_s+asc%2C+id+asc&email=hello%40nextstrain.org" \
 #           --fail \
 #           --silent \
 #           --show-error \
