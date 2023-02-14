@@ -6,13 +6,16 @@ from snakemake.utils import min_version
 min_version("6.0")
 
 # 1) Importable rules from modules =================
+# module vv_ingest:
+#     snakefile:
+#         github(
+#             "j23414/test_snakemake_6",
+#             path="workflow/vv_ingest.smk",
+#             branch="main",
+#         )
 module vv_ingest:
     snakefile:
-        github(
-            "j23414/test_snakemake_6",
-            path="workflow/vv_ingest.smk",
-            branch="main",
-        )
+        "workflow/vv_ingest.smk"
 
 # 2) Connect rules
 
