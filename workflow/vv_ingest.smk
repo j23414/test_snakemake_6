@@ -7,7 +7,7 @@ rule getGenBankIDs:
     shell:
         """
         [[ -d bin ]] || bin
-        [[ -f bin/genbank-rul ]] || wget https://raw.githubusercontent.com/nextstrain/dengue/49b7defc60c3c36652f5a52145649f4a5d82be17/ingest/bin/genbank-url
+        [[ -f bin/genbank-rul ]] || wget https://raw.githubusercontent.com/nextstrain/dengue/49b7defc60c3c36652f5a52145649f4a5d82be17/ingest/bin/genbank-url bin/genbank-url
         chmod +x bin/genbank-url
 
         URL=$(./bin/genbank-url --taxonid {params.taxonid})
