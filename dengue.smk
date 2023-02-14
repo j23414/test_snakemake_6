@@ -77,7 +77,8 @@ rule serotype_dengue:
         denv2="data/DENV2.ids",
         denv3="data/DENV3.ids",
         denv4="data/DENV4.ids",
-        unclassified="data/unclassified.ids"
+        unclassified="data/unclassified.ids",
+        dengue_serotypes="data/dengue_serotypes.txt"
     shell:
         """
         #! /usr/bin/env bash
@@ -88,11 +89,20 @@ rule serotype_dengue:
           -outfmt 6 \
           -out blast_output.txt
 
-        cat blast_output.txt | awk -F'\t' '$2~/REF_DENV1/  {{print $1}}' > {output.denv1}
-        cat blast_output.txt | awk -F'\t' '$2~/REF_DENV2/  {{print $1}}' > {output.denv2}
-        cat blast_output.txt | awk -F'\t' '$2~/REF_DENV3/  {{print $1}}' > {output.denv3}
-        cat blast_output.txt | awk -F'\t' '$2~/REF_DENV4/  {{print $1}}' > {output.denv4}
+        cat blast_output.txt \
+          | awk -F'|' 'OFS="\t" {{print $1,$3}}' \
+          | awk 'OFS="\t" {{print $1,$3}}' \
+          > {output.dengue_serotypes}
 
-        cat {output.denv1} {output.denv2} {output.denv3} {output.denv4} > temp.ids
+        cat {output.dengue_serotypes} \
+          | awk -F'\t' 'OFS="\t" {{print $1}}' \
+          > temp.ids
+
         grep ">" {input.query} | sed 's/>//g' | grep -v -f temp.ids > {output.unclassified}
         """
+
+use rule genbank_to_protein from ncbi as convert_to_protein with:
+    input:
+        genbank_gb="data/dengue.gb",
+    output:
+        protein_fasta="data/dengue_protein.fasta"

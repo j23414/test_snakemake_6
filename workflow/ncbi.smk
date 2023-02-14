@@ -167,3 +167,18 @@ rule genbank_to_nucleotide:
         chmod +x bin/procGenbank.pl
         perl bin/procGenbank.pl {input.genbank_gb} > {output.nucleotide_fasta}
         """
+
+rule genbank_to_protein:
+    input:
+        genbank_gb="data/rsv.gb",
+    output:
+        protein_fasta="data/rsv_protein.fasta",
+    shell:
+        """
+        #! /usr/bin/env bash
+        [[ -d bin ]] || mkdir bin
+        [[ -f bin/genbank2protein.pl ]] || wget -O bin/genbank2protein.pl https://raw.githubusercontent.com/j23414/iav-s/main/bin/genbank2protein.pl
+        chmod +x bin/*
+
+        perl bin/genbank2protein.pl {input.genbank_gb} > {output.protein_fasta}
+        """ 
