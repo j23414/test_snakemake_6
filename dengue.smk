@@ -1,4 +1,4 @@
-# USAGE: snakemake --snakefile ingest.smk fetch_gb -c4
+# USAGE: snakemake --snakefile dengue.smk -c4
 
 from doctest import debug_script
 from snakemake.utils import min_version
