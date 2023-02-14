@@ -1,4 +1,4 @@
-# USAGE: snakemake --snakefile dengue.smk -c4
+# USAGE: snakemake --snakefile dengue.smk data/dengue_ids.txt -c1
 
 from doctest import debug_script
 from snakemake.utils import min_version
