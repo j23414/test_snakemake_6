@@ -1,7 +1,8 @@
 
 rule getGenBankIDs:
     output:
-        output="genbank_ids.txt",
+        genbank_ids="genbank_ids.txt",
+        update_date_list="genbank_ids_update_date.txt"
     params:
         taxonid="11320",
     shell:
@@ -15,5 +16,7 @@ rule getGenBankIDs:
         curl $URL \
           --fail --silent --show-error --http1.1 \
           --header 'User-Agent: https://github.com/nextstrain/dengue (hello@nextstrain.org)' \
-          > {output}
+          > {output.update_date_list}
+        
+        cat {output.update_date_list} | awk -F',' '{{print $1}}' > {output.genbank_ids}
         """

@@ -153,3 +153,17 @@ rule datasets_summary:
         #! /usr/bin/env bash
         datasets summary genome taxon "{params.taxon}" &> {output.out_file}
         """
+
+rule genbank_to_nucleotide:
+    input:
+        genbank_gb="data/rsv.gb",
+    output:
+        nucleotide_fasta="data/rsv.fasta",
+    shell:
+        """
+        #! /usr/bin/env bash
+        [[ -d bin ]] || mkdir bin
+        [[ -f bin/procGenbank.pl ]] || wget -O bin/procGenbank.pl https://raw.githubusercontent.com/j23414/mini_nf/main/bin/procGenbank.pl
+        chmod +x bin/procGenbank.pl
+        perl bin/procGenbank.pl {input.genbank_gb} > {output.nucleotide_fasta}
+        """
