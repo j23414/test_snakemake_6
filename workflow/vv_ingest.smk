@@ -6,7 +6,7 @@ rule getGenBankIDs:
         taxonid="11320",
     shell:
         """
-        [[ -d bin ]] || bin
+        [[ -d bin ]] || mkdir bin
         [[ -f bin/genbank-rul ]] || wget https://raw.githubusercontent.com/nextstrain/dengue/49b7defc60c3c36652f5a52145649f4a5d82be17/ingest/bin/genbank-url bin/genbank-url
         chmod +x bin/genbank-url
 
