@@ -54,10 +54,17 @@ rule fetch_dengue_references:
         [[ -f bin/procGenbank.pl ]] || wget -O bin/procGenbank.pl https://raw.githubusercontent.com/j23414/mini_nf/main/bin/procGenbank.pl
         chmod +x bin/*
         
+        # Reference strains: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6509522/
         echo "U88536" > data/dengue_references.id
+        # KM204119
         echo "U87411" >> data/dengue_references.id
+        # M84727,KU725663
+        # M29095,AF038403,KM204118  # NGC
         echo "AY099336" >> data/dengue_references.id
+        # M93130,KU050695
         echo "AF326825" >> data/dengue_references.id
+        # AY947539,KR011349
+
 
         bin/batchFetchGB.sh data/dengue_references.id > data/dengue_references.gb
         bin/procGenbank.pl data/dengue_references.gb \
